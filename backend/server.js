@@ -25,14 +25,61 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
+const parseAllowedOrigins = (...values) =>
+  values
+    .filter(Boolean)
+    .flatMap((value) => value.split(","))
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+const configuredOrigins = parseAllowedOrigins(
+  process.env.CLIENT_URL,
+  process.env.CLIENT_URLS,
+  process.env.FRONTEND_URL
+);
+
+const allowedOrigins = new Set([
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  ...configuredOrigins
+]);
+
+const isAllowedOrigin = (origin) => {
+  if (!origin) {
+    return true;
+  }
+
+  if (allowedOrigins.has(origin)) {
+    return true;
+  }
+
+  return /^https:\/\/[a-z0-9-]+\.onrender\.com$/i.test(origin);
+};
+
+const corsOriginHandler = (origin, callback) => {
+  if (isAllowedOrigin(origin)) {
+    callback(null, true);
+    return;
+  }
+
+  callback(new Error(`Origin not allowed by CORS: ${origin}`));
+};
+
+const corsOptions = {
+  origin: corsOriginHandler,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+};
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "https://sync-space-1.onrender.com",
+    origin: corsOriginHandler,
+    credentials: true,
     methods: ["GET", "POST"]
   }
 });
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
