@@ -48,7 +48,7 @@ function ContributionDashboard() {
       {
         label: "Tasks Completed",
         data: leaderboard.map((entry) => entry.tasksCompleted),
-        backgroundColor: "rgba(15, 118, 110, 0.78)",
+        backgroundColor: "rgba(45, 212, 191, 0.72)",
         borderRadius: 12
       },
       {
@@ -60,7 +60,7 @@ function ContributionDashboard() {
       {
         label: "Files Uploaded",
         data: leaderboard.map((entry) => entry.filesUploaded),
-        backgroundColor: "rgba(124, 45, 18, 0.78)",
+        backgroundColor: "rgba(251, 191, 36, 0.58)",
         borderRadius: 12
       }
     ]
@@ -89,23 +89,31 @@ function ContributionDashboard() {
   return (
     <div className="page-shell">
       <div className="container py-4 py-lg-5">
-        <div className="mb-4">
-          <Link to={`/projects/${id}`} className="btn btn-outline-dark btn-sm mb-3">
-            ← Back to Workspace
-          </Link>
-          <span className="eyebrow">Contribution Tracker</span>
-          <h1 className="fw-bold">{project?.title} — Team Contributions</h1>
-          <p className="text-muted mb-0">
-            Compare completed tasks, messages sent, and file uploads across the team.
-          </p>
+        <div className="workspace-header mb-4">
+          <div className="d-flex flex-column flex-xl-row justify-content-between gap-3 align-items-xl-center">
+            <div>
+              <span className="eyebrow">Contribution Tracker</span>
+              <h1 className="fw-bold mb-2">{project?.title} Team Contributions</h1>
+              <p className="text-muted mb-0">
+                Compare completed tasks, messages sent, and file uploads across the team.
+              </p>
+            </div>
+            <div className="d-flex flex-wrap gap-2">
+              <Link to={`/projects/${id}`} className="btn btn-outline-dark">
+                Back to Workspace
+              </Link>
+              <Link to={`/projects/${id}/tasks`} className="btn btn-outline-dark">
+                Open Task Board
+              </Link>
+            </div>
+          </div>
         </div>
 
         {error && <div className="alert alert-danger">{error}</div>}
 
         <div className="row g-4">
-          {/* Leaderboard Table */}
           <div className="col-lg-5">
-            <div className="card border-0 shadow-sm">
+            <div className="card border-0 shadow-sm h-100">
               <div className="card-body p-4">
                 <h4 className="fw-bold mb-3">Leaderboard</h4>
                 {leaderboard.length === 0 ? (
@@ -151,7 +159,6 @@ function ContributionDashboard() {
             </div>
           </div>
 
-          {/* Bar Chart */}
           <div className="col-lg-7">
             <div className="card border-0 shadow-sm h-100">
               <div className="card-body p-4">

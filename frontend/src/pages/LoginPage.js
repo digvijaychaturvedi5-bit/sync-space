@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { authAPI } from "../services/api";
+import { storeUser } from "../services/authStorage";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -19,8 +20,8 @@ function LoginPage() {
 
     try {
       const { data } = await authAPI.login(form);
-      localStorage.setItem("syncSpaceUser", JSON.stringify(data));
-      navigate("/");
+      storeUser(data);
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {

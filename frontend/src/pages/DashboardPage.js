@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import ContributionTrackerSection from "../components/ContributionTrackerSection";
 import CreateProjectModal from "../components/CreateProjectModal";
 import JoinProjectCard from "../components/JoinProjectCard";
 import ProjectCard from "../components/ProjectCard";
 import SummaryCard from "../components/SummaryCard";
 import { analyticsAPI, projectAPI } from "../services/api";
+import { clearStoredUser, useStoredUser } from "../services/authStorage";
 
 function DashboardPage() {
-  const currentUser = JSON.parse(localStorage.getItem("syncSpaceUser"));
+  const navigate = useNavigate();
+  const currentUser = useStoredUser();
   const [projects, setProjects] = useState([]);
   const [summary, setSummary] = useState(null);
   const [contributionData, setContributionData] = useState(null);
@@ -17,6 +20,11 @@ function DashboardPage() {
   const [contributionLoading, setContributionLoading] = useState(false);
   const [removingProjectId, setRemovingProjectId] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleLogout = () => {
+    clearStoredUser();
+    navigate("/", { replace: true });
+  };
 
   const loadDashboard = async () => {
     try {
@@ -136,6 +144,14 @@ function DashboardPage() {
             </div>
             <div className="col-lg-5">
               <div className="hero-highlight-grid">
+                <div className="d-flex flex-wrap gap-2 justify-content-lg-end mb-3">
+                  <Link className="btn btn-outline-dark" to="/">
+                    Home
+                  </Link>
+                  <button type="button" className="btn btn-sunset" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </div>
                 <div className="hero-highlight-card">
                   <span className="hero-highlight-label">Focus</span>
                   <strong>One place for tasks, files, and updates</strong>

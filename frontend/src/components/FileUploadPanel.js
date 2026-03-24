@@ -60,7 +60,7 @@ function FileUploadPanel({ files, projectId, onUpload, loading }) {
                     Uploaded by {file.uploadedBy?.name} on {new Date(file.createdAt).toLocaleString()}
                   </div>
                   <div className="small text-muted">
-                    {file.fileType || "File"} {file.fileSize ? `• ${(file.fileSize / (1024 * 1024)).toFixed(2)} MB` : ""}
+                    {file.fileType || "File"} {file.fileSize ? `- ${(file.fileSize / (1024 * 1024)).toFixed(2)} MB` : ""}
                   </div>
                 </a>
               ))}

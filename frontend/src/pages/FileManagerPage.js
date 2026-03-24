@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import FileUploadPanel from "../components/FileUploadPanel";
 import { fileAPI, projectAPI } from "../services/api";
 
@@ -50,12 +50,26 @@ function FileManagerPage() {
   return (
     <div className="page-shell">
       <div className="container py-4 py-lg-5">
-        <div className="mb-4">
-          <span className="eyebrow">File Manager</span>
-          <h1 className="fw-bold">{project.title} Files</h1>
-          <p className="text-muted mb-0">Centralize reports, slides, research papers, and final submissions.</p>
+        <div className="workspace-header mb-4">
+          <div className="d-flex flex-column flex-xl-row justify-content-between gap-3 align-items-xl-center">
+            <div>
+              <span className="eyebrow">File Manager</span>
+              <h1 className="fw-bold mb-2">{project.title} Files</h1>
+              <p className="text-muted mb-0">Centralize reports, slides, research papers, and final submissions.</p>
+            </div>
+            <div className="d-flex flex-wrap gap-2">
+              <Link className="btn btn-outline-dark" to={`/projects/${id}`}>
+                Back to Workspace
+              </Link>
+              <Link className="btn btn-outline-dark" to={`/projects/${id}/tasks`}>
+                Open Task Board
+              </Link>
+            </div>
+          </div>
         </div>
+
         {error && <div className="alert alert-danger">{error}</div>}
+
         <FileUploadPanel files={files} projectId={id} onUpload={handleUpload} loading={loading} />
       </div>
     </div>

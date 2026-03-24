@@ -6,23 +6,26 @@ import ChatSectionPage from "./pages/ChatSectionPage";
 import CodeEditorPage from "./pages/CodeEditorPage";
 import DashboardPage from "./pages/DashboardPage";
 import FileManagerPage from "./pages/FileManagerPage";
+import Landing from "./pages/Landing";
 import LoginPage from "./pages/LoginPage";
 import ProjectWorkspacePage from "./pages/ProjectWorkspacePage";
 import RegisterPage from "./pages/RegisterPage";
 import TaskBoardPage from "./pages/TaskBoardPage";
 import ContributionDashboard from "./pages/ContributionDashboard";
+import { useStoredUser } from "./services/authStorage";
 
 function App() {
-  const user = JSON.parse(localStorage.getItem("syncSpaceUser"));
+  const user = useStoredUser();
 
   return (
     <>
       <AppNavbar />
       <Routes>
-        <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
-        <Route path="/register" element={user ? <Navigate to="/" replace /> : <RegisterPage />} />
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
+        <Route path="/register" element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />} />
         <Route
-          path="/"
+          path="/dashboard"
           element={
             <ProtectedRoute>
               <DashboardPage />

@@ -1,46 +1,38 @@
 import React from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { clearStoredUser, useStoredUser } from "../services/authStorage";
 
 function AppNavbar() {
+  const location = useLocation();
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("syncSpaceUser"));
+  const user = useStoredUser();
 
   const handleLogout = () => {
-    localStorage.removeItem("syncSpaceUser");
-    navigate("/login");
+    clearStoredUser();
+    navigate("/", { replace: true });
   };
 
-  if (!user) {
+  if (!user || location.pathname === "/") {
     return null;
   }
 
   return (
-    <nav className="navbar navbar-expand-lg glass-nav px-3 px-lg-4">
+    <nav className="navbar glass-nav px-3 px-lg-4">
       <div className="container-fluid">
-        <Link className="navbar-brand fw-bold text-white" to="/">
+        <Link className="navbar-brand fw-bold text-white" to="/dashboard">
           Sync Space
         </Link>
-        <button
-          className="navbar-toggler border-0 shadow-none"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#mainNav"
-          aria-controls="mainNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
-        <div className="collapse navbar-collapse" id="mainNav">
-          <div className="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            <NavLink className="nav-link text-white" to="/">
-              Dashboard
-            </NavLink>
-            <span className="nav-link text-white-50 small">{user.name}</span>
-            <button type="button" className="btn btn-sunset" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
+        <div className="d-flex flex-wrap align-items-center justify-content-end gap-2 gap-lg-3 ms-auto">
+          <NavLink className="nav-link text-white px-2" to="/">
+            Home
+          </NavLink>
+          <NavLink className="nav-link text-white px-2" to="/dashboard">
+            Dashboard
+          </NavLink>
+          <span className="text-white-50 small px-2">{user.name}</span>
+          <button type="button" className="btn btn-sunset" onClick={handleLogout}>
+            Logout
+          </button>
         </div>
       </div>
     </nav>

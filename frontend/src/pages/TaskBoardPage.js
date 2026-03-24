@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import TaskAlertsPanel from "../components/TaskAlertsPanel";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
 import { projectAPI, taskAPI } from "../services/api";
 import { getSocketUrl } from "../services/config";
+import { getStoredUser } from "../services/authStorage";
 
 function TaskBoardPage() {
   const { id } = useParams();
@@ -35,9 +36,8 @@ function TaskBoardPage() {
     loadData();
   }, [loadData]);
 
-  // Socket.io: listen for deadline alerts in real-time
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("syncSpaceUser"));
+    const user = getStoredUser();
     if (!user?.token) {
       return;
     }
@@ -54,7 +54,7 @@ function TaskBoardPage() {
       if (payload.projectId === id) {
         setNotifications((prev) => [
           ...prev,
-          { id: Date.now(), type: "overdue", message: `❌ ${payload.message}` }
+          { id: Date.now(), type: "overdue", message: `[Overdue] ${payload.message}` }
         ]);
         loadData();
       }
@@ -64,7 +64,7 @@ function TaskBoardPage() {
       if (payload.projectId === id) {
         setNotifications((prev) => [
           ...prev,
-          { id: Date.now(), type: "warning", message: `⚠️ ${payload.message}` }
+          { id: Date.now(), type: "warning", message: `[Due Soon] ${payload.message}` }
         ]);
         loadData();
       }
@@ -76,7 +76,7 @@ function TaskBoardPage() {
   }, [id, loadData]);
 
   const dismissNotification = (notifId) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== notifId));
+    setNotifications((prev) => prev.filter((notification) => notification.id !== notifId));
   };
 
   const handleCreate = async (form, reset) => {
@@ -111,13 +111,24 @@ function TaskBoardPage() {
   return (
     <div className="page-shell">
       <div className="container py-4 py-lg-5">
-        <div className="mb-4">
-          <span className="eyebrow">Task Management</span>
-          <h1 className="fw-bold">{project.title} Task Board</h1>
-          <p className="text-muted mb-0">Plan responsibilities, track progress, and stay ahead of deadlines.</p>
+        <div className="workspace-header mb-4">
+          <div className="d-flex flex-column flex-xl-row justify-content-between gap-3 align-items-xl-center">
+            <div>
+              <span className="eyebrow">Task Management</span>
+              <h1 className="fw-bold mb-2">{project.title} Task Board</h1>
+              <p className="text-muted mb-0">Plan responsibilities, track progress, and stay ahead of deadlines.</p>
+            </div>
+            <div className="d-flex flex-wrap gap-2">
+              <Link className="btn btn-outline-dark" to={`/projects/${id}`}>
+                Back to Workspace
+              </Link>
+              <Link className="btn btn-outline-dark" to={`/projects/${id}/files`}>
+                Open Files
+              </Link>
+            </div>
+          </div>
         </div>
 
-        {/* Real-time deadline notifications */}
         {notifications.map((notif) => (
           <div
             key={notif.id}
@@ -131,6 +142,7 @@ function TaskBoardPage() {
 
         {error && <div className="alert alert-danger">{error}</div>}
         <TaskAlertsPanel alerts={alerts} />
+
         <div className="row g-4">
           <div className="col-lg-4">
             <TaskForm members={project.members} projectId={id} onCreate={handleCreate} loading={loading} />
@@ -145,4 +157,3 @@ function TaskBoardPage() {
 }
 
 export default TaskBoardPage;
-
